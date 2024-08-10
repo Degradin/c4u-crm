@@ -157,11 +157,20 @@ bot.action(/create_order_(.+)/, (ctx) => {
     }
 });
 
+bot.hears('🛍️ Магазин', (ctx) => {
+    const userPoints = 500; // Здесь необходимо получить реальные баллы пользователя
+    const url = `http://10.75.108.19:3000?chatId=${ctx.chat.id}&points=${userPoints}`;
+    ctx.reply(`🛍️ [Перейти в магазин](${url})`, { parse_mode: 'Markdown' });
+});
+
 const stage = new Scenes.Stage([registerScene, orderScene, viewClientInfoScene]);
 bot.use(session());
 bot.use(stage.middleware());
 
-const mainMenu = Markup.keyboard([['👥 Зарегистрировать клиента', '🛒 Создать заказ', '🔍 Информация о клиенте']]).resize();
+const mainMenu = Markup.keyboard([
+    ['👥 Зарегистрировать клиента', '🛒 Создать заказ'],
+    ['🔍 Информация о клиенте', '🛍️ Магазин']
+]).resize();
 
 bot.start((ctx) => ctx.reply('Добро пожаловать! Выберите действие:', mainMenu));
 
@@ -188,11 +197,11 @@ bot.hears('🔍 Информация о клиенте', (ctx) => {
         ctx.reply('❌ У вас нет прав на просмотр информации о клиенте.', mainMenu);
     }
 });
-
+bot.launch();
 // Connect to MongoDB and start the bot
 initializeDatabase(process.env.MONGODB_URI).then((database) => {
     db = database;
-    bot.launch();
+    
     console.log('Bot started successfully.');
 }).catch((err) => {
     console.error('Failed to connect to the database:', err);
