@@ -4,6 +4,7 @@ const { MongoClient } = require('mongodb');
 const { initializeDatabase, getUserByPhone, createUser, updateUser } = require('./database');
 const { createCanvas, loadImage, registerFont  } = require('canvas');
 const path = require('path');
+const QRCode = require('qrcode');
 
 const bot = new Telegraf(process.env.CLIENT_BOT_TOKEN);
 let db;
@@ -133,6 +134,7 @@ bot.action('profile', async (ctx) => {
         await ctx.editMessageText(message, Markup.inlineKeyboard([
             [Markup.button.callback('Настройки', 'settings')],
             [Markup.button.callback('Мои печати', 'my_stamps')],
+            [Markup.button.callback('Мой QR', 'qr_code')],
         ]));
     } else {
         ctx.reply('❌ Сначала авторизуйтесь.');
@@ -184,6 +186,23 @@ bot.action('unsubscribe_ads', async (ctx) => {
         await ctx.editMessageText('✅ Подписка на рекламные сообщения отключена.', mainMenu());
     } else {
         ctx.reply('❌ Сначала авторизуйтесь.');
+    }
+});
+
+bot.action('qr_code', async (ctx) => {
+    const phoneNumber = '+79180512828' // Здесь вы можете взять номер телефона клиента из сессии или базы данных
+    const botUsername = 'c4u_manager_bot'; // Имя вашего бота
+    const message = encodeURIComponent(phoneNumber); // Предзаполненное сообщение с номером телефона
+
+    const link = `https://t.me/${botUsername}?start=${message}`;
+
+    try {
+        const qrBuffer = await QRCode.toBuffer(link, { errorCorrectionLevel: 'H' });
+
+        await ctx.replyWithPhoto({ source: qrBuffer }, { caption: 'Вот ваш QR-код с номером телефона для менеджера.' });
+    } catch (err) {
+        console.error('Ошибка генерации QR-кода:', err);
+        await ctx.reply('❌ Ошибка генерации QR-кода. Пожалуйста, попробуйте снова позже.');
     }
 });
 
