@@ -23,6 +23,10 @@ bot.use(async (ctx, next) => {
     return next();
 });
 
+// Функция нормализации номера телефона
+function normalizePhoneNumber(phone) {
+    return phone.replace(/[^0-9]/g, '').replace(/^8/, '+7');
+}
 
 // Сцены
 const registerScene = new Scenes.WizardScene(
@@ -146,6 +150,35 @@ const viewClientInfoScene = new Scenes.WizardScene(
         }
     }
 );
+
+// Новая функция для поиска информации по номеру телефона
+bot.on('text', async (ctx) => {
+    const phoneNumberPattern = /(\+7|8)?\d{10}/;
+    const match = ctx.message.text.match(phoneNumberPattern);
+
+    if (match) {
+        const normalizedPhone = normalizePhoneNumber(match[0]);
+        try {
+            const user = await getUserByPhone(db, normalizedPhone);
+            if (user) {
+                const orders = await getUserOrders(db, user._id);
+                const totalAmount = orders.reduce((sum, order) => sum + order.amount, 0);
+                const message = `Информация о клиенте:
+📞 Телефон: ${user.phone}
+📊 Уровень: ${user.level}
+💰 Бонусный баланс: ${user.bonusBalance}
+💸 Всего потрачено: ${totalAmount}`;
+                ctx.reply(message, Markup.inlineKeyboard([
+                    Markup.button.callback('🛒 Создать заказ', `create_order_${user._id}`)
+                ]));
+            } else {
+                ctx.reply('❌ Клиент не найден.');
+            }
+        } catch (error) {
+            ctx.reply('❌ Ошибка при поиске клиента.');
+        }
+    }
+});
 
 bot.hears('🛍️ Магазин', (ctx) => {
     const userPoints = 500; // Здесь необходимо получить реальные баллы пользователя
