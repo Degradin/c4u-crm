@@ -147,16 +147,6 @@ const viewClientInfoScene = new Scenes.WizardScene(
     }
 );
 
-// Обработчик кнопки "Создать заказ" в информации о клиенте
-bot.action(/create_order_(.+)/, (ctx) => {
-    const userId = ctx.match[1];
-    if (ctx.scene) {
-        ctx.scene.enter('order', { userId });
-    } else {
-        ctx.reply('❌ Ошибка. Попробуйте снова.');
-    }
-});
-
 bot.hears('🛍️ Магазин', (ctx) => {
     const userPoints = 500; // Здесь необходимо получить реальные баллы пользователя
     const url = `http://10.75.108.19:3000?chatId=${ctx.chat.id}&points=${userPoints}`;
@@ -173,6 +163,12 @@ const mainMenu = Markup.keyboard([
 ]).resize();
 
 bot.start((ctx) => ctx.reply('Добро пожаловать! Выберите действие:', mainMenu));
+
+// Обработчик кнопки "Создать заказ" в информации о клиенте
+bot.action(/create_order_(.+)/, (ctx) => {
+    const userId = ctx.match[1];
+    ctx.scene.enter('order', { userId });
+});
 
 bot.hears('👥 Зарегистрировать клиента', (ctx) => {
     if (['developer', 'admin', 'manager'].includes(ctx.state.role)) {

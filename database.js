@@ -1,7 +1,7 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
 async function initializeDatabase(uri) {
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = new MongoClient(uri);
     await client.connect();
     const db = client.db('c4u-crm');
     return db;
