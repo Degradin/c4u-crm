@@ -3,3 +3,5 @@ node_modules/
 
 # Исключить файл .env
 .env
+
+bot.log
