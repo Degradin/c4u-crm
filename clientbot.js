@@ -79,7 +79,7 @@ bot.on('contact', async (ctx) => {
 
     // Подтверждаем успешную авторизацию и показываем основное меню
     const message = 'Ваш номер телефона успешно сохранен и вы авторизованы.';
-    const reply = await ctx.reply(message, Markup.keyboard(['💛 Профиль'], resize_keyboard, one_time_keyboard));
+    const reply = await ctx.reply(message, Markup.keyboard(['💛 Профиль']));
     ctx.session.messageId = reply.message_id;
 });
 

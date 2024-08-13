@@ -31,7 +31,6 @@ bot.use(async (ctx, next) => {
         accessLevel = ctx.state.role
         managerID = ctx.from.id
     }
-    if(ctx.state.role == roles.CLIENT) return ctx.sendMessage('No Permission!')
     return next();
 });
 
@@ -68,6 +67,7 @@ const phoneNumberPattern = /^(?:\+7|8|7)\d{10}$/;
 
 // Обработка сообщений с номером телефона
 bot.on('text', async (ctx) => {
+    if(ctx.state.role == roles.CLIENT) return ctx.sendMessage('No Permission!')
     const text = ctx.message.text.trim();
     logger.info(`Received text message: ${text}`);
 
