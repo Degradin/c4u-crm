@@ -4,7 +4,8 @@ const axios = require('axios');
 
 const app = express();
 
-const SECRET_KEY = crypto.createHash('sha256').update(process.env.MANAGER_BOT_TOKEN).digest();
+const BOT_TOKEN = process.env.MANAGER_BOT_TOKEN;
+const SECRET_KEY = crypto.createHash('sha256').update(BOT_TOKEN).digest();
 
 app.get('/auth', (req, res) => {
     const { hash, ...data } = req.query;

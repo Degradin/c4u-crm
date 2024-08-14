@@ -85,6 +85,7 @@ bot.on('text', async (ctx) => {
             const totalAmount = orders.reduce((sum, order) => sum + order.amount, 0);
             const message = `Информация о клиенте:
 *️⃣ Статус: ${user.role}  [${user.authorized ? '🔵' : '⚫'}]
+🧩 Категория: ${user.category.replace('Common', 'Обычный')}  [${user.authorized ? '🔵' : '⚫'}]
 📞 Телефон: ${user.phone}
 📊 Уровень: ${user.level}
 💰 Бонусный баланс: ${user.bonusBalance}
@@ -138,7 +139,7 @@ bot.action('register_yes', async (ctx) => {
     // Регистрация нового клиента
     const phone = ctx.session.phone;
     if (phone) {
-        await createUser(db, { phone, telegramId: ctx.from.id, role: 'client', level: 1, bonusBalance: 0, stamps: 0, authorized: false });
+        await createUser(db, { phone, telegramId: ctx.from.id, role: 'client', category: 'Common', level: 1, bonusBalance: 0, stamps: 0, authorized: false });
         const message = '✅ Клиент успешно зарегистрирован. Введите сумму заказа.';
         ctx.session.user = await getUserByPhone(db, phone);
         ctx.session.phone = null; // Очистить номер телефона
